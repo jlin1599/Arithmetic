@@ -1,0 +1,76 @@
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+//
+int main() {
+  // used to get data from file to arrays
+  string txt;
+  string ans;
+  vector<string> ArithQ;
+  vector<string> AnsOfA;
+  // used to shuffle the questions and get input + count the correct answer
+  int index = 0;
+  int randomQuestion = 0;
+  double answer;
+  double user_answer = 0;
+  double numCorrect = 0;
+  // used to get percentage correct
+  int numberOfQuestions = 0;
+  double percentCorrect;
+//
+  srand(time(NULL));
+  ifstream fin("problems.csv");
+  if (fin.fail()) {
+    cerr << "The file cannot be opened for reading" << endl;
+    exit(1);
+  }
+//
+  while (getline(fin, txt, ',') && getline(fin, ans)) {
+    ArithQ.push_back(txt);
+    AnsOfA.push_back(ans);
+    index++;
+  }
+  fin.close();
+//
+  // initialize percent correct here
+  numberOfQuestions = AnsOfA.size();
+  percentCorrect = numCorrect / numberOfQuestions * 100;
+//  
+//
+  while (index > 0 && percentCorrect<60) {
+    // add percent condition in while loop && percentCorrect < 60
+    // or check it inside the while loop to break out if >60%
+
+    randomQuestion = rand() % index;
+    cout << "What is " << ArithQ[randomQuestion] << "? ";
+    // get answer to comapre with input
+    cin >> user_answer;
+    
+    
+    answer = stof(AnsOfA[randomQuestion]);
+    //user_answer = answer; // for testing purpose
+    if (user_answer == answer) {
+      numCorrect++;
+      cout << "True" << endl;
+    } else {
+      cout << "False" << endl;
+    }
+    //check percentage correct again
+    percentCorrect = numCorrect / numberOfQuestions * 100;
+    //swap
+    swap(ArithQ[randomQuestion], ArithQ[index - 1]);
+    swap(AnsOfA[randomQuestion], AnsOfA[index - 1]);
+    index--;
+  }
+  // check percentage correct again
+  percentCorrect = (numCorrect / numberOfQuestions) * 100;
+  if (percentCorrect >= 60) {
+    cout << "At least 60% is correct. Stop.\n";
+  }
+  // gradescope may want to detect displayed percentage correct even if > 60%
+  cout << "percentage correct: " << percentCorrect << "%";
+}
